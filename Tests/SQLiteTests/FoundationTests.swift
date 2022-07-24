@@ -25,4 +25,16 @@ class FoundationTests: XCTestCase {
         let uuid = UUID.fromDatatypeValue(string)
         XCTAssertEqual(UUID(uuidString: "4ABE10C9-FF12-4CD4-90C1-4B429001BAD3"), uuid)
     }
+
+    func testURLFromString() {
+        let string = "http://foo.com"
+        let url = URL.fromDatatypeValue(string)
+        XCTAssertEqual(URL(string: string), url)
+    }
+
+    func testStringFromURL() {
+        let url = URL(string: "http://foo.com")!
+        let string = url.datatypeValue
+        XCTAssertEqual("http://foo.com", string)
+    }
 }

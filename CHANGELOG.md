@@ -1,10 +1,39 @@
-0.13.1 (tba)
+0.14.0 (tbd), [diff][diff-0.14.0]
+========================================
+
+* Support `ATTACH`/`DETACH` ([#30][], [#1142][])
+* Support `WITH` clause ([#1139][])
+* Add `Value` conformance for `NSURL` ([#1110][], [#1141][])
+* Add decoding for `UUID` ([#1137][])
+* SQLCipher: improve documentation ([#1098][]), add `sqlcipher_export` ([#1101][])
+* Fix `insertMany([Encodable])` ([#1130][], [#1138][])
+* Fix incorrect spelling of `remove_diacritics` ([#1128][])
+* Fix project build order ([#1131][])
+* Performance improvements ([#1109][], [#1115][], [#1132][])
+* Removed FTS3/4 tokenizer integration (`registerTokenizer`, [#1104][], [#1144][])
+
+0.13.3 (27-03-2022), [diff][diff-0.13.3]
+========================================
+
+* UUID Fix ([#1112][])
+* Add prepareRowIterator method to an extension of Statement. ([#1119][])
+* Adding primary key support to column with references ([#1121][])
+
+0.13.2 (25-01-2022), [diff][diff-0.13.2]
+========================================
+
+* Closing bracket position ([#1100][])
+* Native user_version support in Connection ([#1105][])
+
+0.13.1 (17-11-2021), [diff][diff-0.13.1]
 ========================================
 
 * Support for database backup ([#919][])
 * Support for custom SQL aggregates ([#881][])
-* Restore previous iteration behavior ([#1075][])
+* Restore previous behavior in `FailableIterator` ([#1075][])
 * Fix compilation on Linux ([#1077][])
+* Align platform versions in SPM manifest and Xcode ([#1094][])
+* Revert OSX deployment target back to 10.10 ([#1095][])
 
 0.13.0 (22-08-2021), [diff][diff-0.13.0]
 ========================================
@@ -92,7 +121,12 @@
 [diff-0.12.0]: https://github.com/stephencelis/SQLite.swift/compare/0.11.6...0.12.0
 [diff-0.12.2]: https://github.com/stephencelis/SQLite.swift/compare/0.12.0...0.12.2
 [diff-0.13.0]: https://github.com/stephencelis/SQLite.swift/compare/0.12.2...0.13.0
+[diff-0.13.1]: https://github.com/stephencelis/SQLite.swift/compare/0.13.0...0.13.1
+[diff-0.13.2]: https://github.com/stephencelis/SQLite.swift/compare/0.13.1...0.13.2
+[diff-0.13.3]: https://github.com/stephencelis/SQLite.swift/compare/0.13.2...0.13.3
+[diff-0.14.0]: https://github.com/stephencelis/SQLite.swift/compare/0.13.3...0.14.0
 
+[#30]: https://github.com/stephencelis/SQLite.swift/issues/30
 [#142]: https://github.com/stephencelis/SQLite.swift/issues/142
 [#315]: https://github.com/stephencelis/SQLite.swift/issues/315
 [#426]: https://github.com/stephencelis/SQLite.swift/pull/426
@@ -128,3 +162,26 @@
 [#919]: https://github.com/stephencelis/SQLite.swift/pull/919
 [#1075]: https://github.com/stephencelis/SQLite.swift/pull/1075
 [#1077]: https://github.com/stephencelis/SQLite.swift/issues/1077
+[#1094]: https://github.com/stephencelis/SQLite.swift/pull/1094
+[#1095]: https://github.com/stephencelis/SQLite.swift/pull/1095
+[#1098]: https://github.com/stephencelis/SQLite.swift/issues/1098
+[#1100]: https://github.com/stephencelis/SQLite.swift/pull/1100
+[#1101]: https://github.com/stephencelis/SQLite.swift/issues/1101
+[#1104]: https://github.com/stephencelis/SQLite.swift/issues/1104
+[#1105]: https://github.com/stephencelis/SQLite.swift/pull/1105
+[#1109]: https://github.com/stephencelis/SQLite.swift/issues/1109
+[#1110]: https://github.com/stephencelis/SQLite.swift/pull/1110
+[#1112]: https://github.com/stephencelis/SQLite.swift/pull/1112
+[#1115]: https://github.com/stephencelis/SQLite.swift/pull/1115
+[#1119]: https://github.com/stephencelis/SQLite.swift/pull/1119
+[#1121]: https://github.com/stephencelis/SQLite.swift/pull/1121
+[#1128]: https://github.com/stephencelis/SQLite.swift/issues/1128
+[#1130]: https://github.com/stephencelis/SQLite.swift/issues/1130
+[#1131]: https://github.com/stephencelis/SQLite.swift/pull/1131
+[#1132]: https://github.com/stephencelis/SQLite.swift/pull/1132
+[#1137]: https://github.com/stephencelis/SQLite.swift/pull/1137
+[#1138]: https://github.com/stephencelis/SQLite.swift/pull/1138
+[#1139]: https://github.com/stephencelis/SQLite.swift/pull/1139
+[#1141]: https://github.com/stephencelis/SQLite.swift/pull/1141
+[#1142]: https://github.com/stephencelis/SQLite.swift/pull/1142
+[#1144]: https://github.com/stephencelis/SQLite.swift/pull/1144

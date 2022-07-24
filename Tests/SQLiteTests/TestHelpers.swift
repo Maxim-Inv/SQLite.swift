@@ -54,8 +54,8 @@ class SQLiteTestCase: XCTestCase {
         )
     }
 
-    func assertSQL(_ SQL: String, _ statement: Statement, _ message: String? = nil, file: StaticString = #file, line: UInt = #line) {
-        try! statement.run()
+    func assertSQL(_ SQL: String, _ statement: Statement, _ message: String? = nil, file: StaticString = #file, line: UInt = #line) throws {
+        try statement.run()
         assertSQL(SQL, 1, message, file: file, line: line)
         if let count = trace[SQL] { trace[SQL] = count - 1 }
     }
@@ -66,9 +66,9 @@ class SQLiteTestCase: XCTestCase {
 //        if let count = trace[SQL] { trace[SQL] = count - 1 }
 //    }
 
-    func async(expect description: String = "async", timeout: Double = 5, block: (@escaping () -> Void) -> Void) {
+    func async(expect description: String = "async", timeout: Double = 5, block: (@escaping () -> Void) throws -> Void) throws {
         let expectation = self.expectation(description: description)
-        block({ expectation.fulfill() })
+        try block({ expectation.fulfill() })
         waitForExpectations(timeout: timeout, handler: nil)
     }
 
@@ -95,6 +95,11 @@ let int64Optional = Expression<Int64?>("int64Optional")
 let string = Expression<String>("string")
 let stringOptional = Expression<String?>("stringOptional")
 
+let uuid = Expression<UUID>("uuid")
+let uuidOptional = Expression<UUID?>("uuidOptional")
+
+let testUUIDValue = UUID(uuidString: "E621E1F8-C36C-495A-93FC-0C247A3E6E5F")!
+
 func assertSQL(_ expression1: @autoclosure () -> String, _ expression2: @autoclosure () -> Expressible,
                file: StaticString = #file, line: UInt = #line) {
     XCTAssertEqual(expression1(), expression2().asSQL(), file: file, line: line)
@@ -105,24 +110,58 @@ let qualifiedTable = Table("table", database: "main")
 let virtualTable = VirtualTable("virtual_table")
 let _view = View("view") // avoid Mac XCTestCase collision
 
-class TestCodable: Codable {
+class TestCodable: Codable, Equatable {
     let int: Int
     let string: String
     let bool: Bool
     let float: Float
     let double: Double
     let date: Date
+    let uuid: UUID
     let optional: String?
     let sub: TestCodable?
 
-    init(int: Int, string: String, bool: Bool, float: Float, double: Double, date: Date, optional: String?, sub: TestCodable?) {
+    init(int: Int, string: String, bool: Bool, float: Float, double: Double, date: Date, uuid: UUID, optional: String?, sub: TestCodable?) {
         self.int = int
         self.string = string
         self.bool = bool
         self.float = float
         self.double = double
         self.date = date
+        self.uuid = uuid
         self.optional = optional
         self.sub = sub
+    }
+
+    static func == (lhs: TestCodable, rhs: TestCodable) -> Bool {
+        lhs.int == rhs.int &&
+        lhs.string == rhs.string &&
+        lhs.bool == rhs.bool &&
+        lhs.float == rhs.float &&
+        lhs.double == rhs.double &&
+        lhs.date == rhs.date &&
+        lhs.uuid == lhs.uuid &&
+        lhs.optional == rhs.optional &&
+        lhs.sub == rhs.sub
+    }
+}
+
+struct TestOptionalCodable: Codable, Equatable {
+    let int: Int?
+    let string: String?
+    let bool: Bool?
+    let float: Float?
+    let double: Double?
+    let date: Date?
+    let uuid: UUID?
+
+    init(int: Int?, string: String?, bool: Bool?, float: Float?, double: Double?, date: Date?, uuid: UUID?) {
+        self.int = int
+        self.string = string
+        self.bool = bool
+        self.float = float
+        self.double = double
+        self.date = date
+        self.uuid = uuid
     }
 }

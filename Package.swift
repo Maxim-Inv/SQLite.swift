@@ -3,6 +3,12 @@ import PackageDescription
 
 let package = Package(
     name: "SQLite.swift",
+    platforms: [
+        .iOS(.v9),
+        .macOS(.v10_10),
+        .watchOS(.v3),
+        .tvOS(.v9)
+    ],
     products: [
         .library(
             name: "SQLite",
@@ -12,16 +18,8 @@ let package = Package(
     targets: [
         .target(
             name: "SQLite",
-            dependencies: ["SQLiteObjc"],
             exclude: [
                 "Info.plist"
-            ]
-        ),
-        .target(
-            name: "SQLiteObjc",
-            dependencies: [],
-            exclude: [
-                "fts3_tokenizer.h"
             ]
         ),
         .testTarget(
@@ -34,25 +32,17 @@ let package = Package(
                 "Info.plist"
             ],
             resources: [
-                .copy("fixtures/encrypted-3.x.sqlite"),
-                .copy("fixtures/encrypted-4.x.sqlite")
+                .copy("Resources")
             ]
         )
     ]
 )
 
 #if os(Linux)
-package.dependencies = [.package(url: "https://github.com/stephencelis/CSQLite.git", from: "0.0.3")]
-package.targets = [
-    .target(
-        name: "SQLite",
-        dependencies: [.product(name: "CSQLite", package: "CSQLite")],
-        exclude: ["Extensions/FTS4.swift", "Extensions/FTS5.swift"]
-    ),
-    .testTarget(name: "SQLiteTests", dependencies: ["SQLite"], path: "Tests/SQLiteTests", exclude: [
-        "FTSIntegrationTests.swift",
-        "FTS4Tests.swift",
-        "FTS5Tests.swift"
-    ])
+package.dependencies = [
+    .package(url: "https://github.com/stephencelis/CSQLite.git", from: "0.0.3")
+]
+package.targets.first?.dependencies += [
+    .product(name: "CSQLite", package: "CSQLite")
 ]
 #endif

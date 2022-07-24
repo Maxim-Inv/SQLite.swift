@@ -21,12 +21,12 @@ class FTS4Tests: XCTestCase {
             virtualTable.create(.FTS4([string], tokenize: .Porter))
         )
         XCTAssertEqual(
-            "CREATE VIRTUAL TABLE \"virtual_table\" USING fts4(tokenize=unicode61 \"removeDiacritics=0\")",
+            "CREATE VIRTUAL TABLE \"virtual_table\" USING fts4(tokenize=unicode61 \"remove_diacritics=0\")",
             virtualTable.create(.FTS4(tokenize: .Unicode61(removeDiacritics: false)))
         )
         XCTAssertEqual(
             """
-            CREATE VIRTUAL TABLE \"virtual_table\" USING fts4(tokenize=unicode61 \"removeDiacritics=1\"
+            CREATE VIRTUAL TABLE \"virtual_table\" USING fts4(tokenize=unicode61 \"remove_diacritics=1\"
              \"tokenchars=.\" \"separators=X\")
             """.replacingOccurrences(of: "\n", with: ""),
             virtualTable.create(.FTS4(tokenize: .Unicode61(removeDiacritics: true,
@@ -116,7 +116,7 @@ class FTS4ConfigTests: XCTestCase {
     func test_tokenizer_unicode61_with_options() {
         XCTAssertEqual(
             """
-            CREATE VIRTUAL TABLE \"virtual_table\" USING fts4(tokenize=unicode61 \"removeDiacritics=1\"
+            CREATE VIRTUAL TABLE \"virtual_table\" USING fts4(tokenize=unicode61 \"remove_diacritics=1\"
              \"tokenchars=.\" \"separators=X\")
             """.replacingOccurrences(of: "\n", with: ""),
             sql(config.tokenizer(.Unicode61(removeDiacritics: true, tokenchars: ["."], separators: ["X"]))))
@@ -187,41 +187,4 @@ class FTS4ConfigTests: XCTestCase {
     func sql(_ config: FTS4Config) -> String {
         virtualTable.create(.FTS4(config))
     }
-}
-
-class FTS4IntegrationTests: SQLiteTestCase {
-#if !SQLITE_SWIFT_STANDALONE && !SQLITE_SWIFT_SQLCIPHER
-    func test_registerTokenizer_registersTokenizer() {
-        let emails = VirtualTable("emails")
-        let subject = Expression<String?>("subject")
-        let body = Expression<String?>("body")
-
-        let locale = CFLocaleCopyCurrent()
-        let tokenizerName = "tokenizer"
-        let tokenizer = CFStringTokenizerCreate(nil, "" as CFString, CFRangeMake(0, 0),
-                                                UInt(kCFStringTokenizerUnitWord), locale)
-        try! db.registerTokenizer(tokenizerName) { string in
-            CFStringTokenizerSetString(tokenizer, string as CFString,
-                                       CFRangeMake(0, CFStringGetLength(string as CFString)))
-            if CFStringTokenizerAdvanceToNextToken(tokenizer).isEmpty {
-                return nil
-            }
-            let range = CFStringTokenizerGetCurrentTokenRange(tokenizer)
-            let input = CFStringCreateWithSubstring(kCFAllocatorDefault, string as CFString, range)!
-            let token = CFStringCreateMutableCopy(nil, range.length, input)!
-            CFStringLowercase(token, locale)
-            CFStringTransform(token, nil, kCFStringTransformStripDiacritics, false)
-            return (token as String, string.range(of: input as String)!)
-        }
-
-        try! db.run(emails.create(.FTS4([subject, body], tokenize: .Custom(tokenizerName))))
-        assertSQL("""
-                  CREATE VIRTUAL TABLE \"emails\" USING fts4(\"subject\", \"body\",
-                   tokenize=\"SQLite.swift\" \"tokenizer\")
-                  """.replacingOccurrences(of: "\n", with: ""))
-
-        try! _ = db.run(emails.insert(subject <- "Aún más cáfe!"))
-        XCTAssertEqual(1, try! db.scalar(emails.filter(emails.match("aun")).count))
-    }
-#endif
 }

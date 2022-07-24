@@ -185,7 +185,11 @@ public final class Statement {
         try connection.sync { try connection.check(sqlite3_step(handle)) == SQLITE_ROW }
     }
 
-    fileprivate func reset(clearBindings shouldClear: Bool = true) {
+    public func reset() {
+        reset(clearBindings: true)
+    }
+
+    fileprivate func reset(clearBindings shouldClear: Bool) {
         sqlite3_reset(handle)
         if shouldClear { sqlite3_clear_bindings(handle) }
     }
@@ -224,6 +228,21 @@ extension Statement: FailableIterator {
     public typealias Element = [Binding?]
     public func failableNext() throws -> [Binding?]? {
         try step() ? Array(row) : nil
+    }
+}
+
+extension Statement {
+    public func prepareRowIterator() -> RowIterator {
+        return RowIterator(statement: self, columnNames: self.columnNameMap)
+    }
+
+    var columnNameMap: [String: Int] {
+        var result = [String: Int]()
+        for (index, name) in self.columnNames.enumerated() {
+            result[name.quote()] = index
+        }
+
+        return result
     }
 }
 
